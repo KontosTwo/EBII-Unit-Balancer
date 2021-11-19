@@ -7,6 +7,8 @@
     <groupId>com.ebii.shoebopp</groupId>
     <artifactId>edu-balancer</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties><maven.compiler.source>12</maven.compiler.source><maven.compiler.target>12</maven.compiler.target></properties>
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
@@ -18,7 +20,23 @@
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>parsington</artifactId>
+            <version>2.0.0</version>
+        </dependency>
     </dependencies>
 
     <build><plugins><plugin>
@@ -30,6 +48,24 @@
                 <goals>
                     <goal>antlr4</goal>
                 </goals>
+            </execution>
+        </executions>
+    </plugin><plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+            <execution>
+                <id>add-source</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>add-source</goal>
+                </goals>
+                <configuration>
+                    <sources>
+                        <source>${project.basedir}/target/generated-sources/antlr4</source>
+                    </sources>
+                </configuration>
             </execution>
         </executions>
     </plugin></plugins></build>

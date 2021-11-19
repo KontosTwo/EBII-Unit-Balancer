@@ -1,4 +1,4 @@
-grammar edu;
+grammar Edu;
 
 // Literals
 
@@ -22,11 +22,6 @@ DecimalDigit
     ;
 
 StringLiteral
-	:	'"' StringCharacters '"'
-	;
-
-fragment
-StringCharacters
 	:	StringCharacter+
 	;
 
@@ -45,6 +40,8 @@ ADD : '+';
 SUB : '-';
 MUL : '*';
 DIV : '/';
+TERNTHEN : '?';
+TERNELSE : ':';
 
 // Keywords separators
 LPAREN : '(';
@@ -68,32 +65,48 @@ configuration
     ;
 
 assignment
-    :   var ASSIGN expression
+    :   var ASSIGN expression SEMI
     ;
 
 var
     :   StringLiteral
     ;
 
-expression
-    :   additiveExpression
-    |   LPAREN expression RPAREN
+number
+    :   DecimalLiteral
     ;
 
+expression
+    :   subtractiveExpression
+    |   ternExpression
+    ;
+
+ternExpression
+    :   subtractiveExpression TERNTHEN expression TERNELSE expression
+    ;
+
+subtractiveExpression
+	:	additiveExpression
+	|	subtractiveExpression '-' additiveExpression
+	;
+
 additiveExpression
+	:	divisiveExpression
+	|	additiveExpression '+' divisiveExpression
+	;
+
+divisiveExpression
 	:	multiplicativeExpression
-	|	additiveExpression '+' multiplicativeExpression
-	|	additiveExpression '-' multiplicativeExpression
+	|	divisiveExpression '/' multiplicativeExpression
 	;
 
 multiplicativeExpression
 	:	value
-	|   multiplicativeExpression '*' value
-	|	multiplicativeExpression '/' value
+	|   multiplicativeExpression '*' expression
 	;
 
 
 value
     : var
-    | DecimalLiteral
+    | number
     ;
