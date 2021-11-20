@@ -6,7 +6,7 @@ import org.scijava.parsington.Variable;
 
 import java.util.List;
 
-public class Tokens {
+class Tokens {
 
     public static Operator write(){
         return new Operator(">",1, Operator.Associativity.NONE,0);

@@ -1,14 +1,16 @@
 package com.ebii.shoebopp.configuration;
 
+import com.ebii.shoebopp.balancer.stat.Stat;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @NoArgsConstructor
 public class Configuration {
-
+    private Map<Stat, Action> statFormulae;
 
 
 

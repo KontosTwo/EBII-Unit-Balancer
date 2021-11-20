@@ -3,17 +3,18 @@ package com.ebii.shoebopp.configuration.parser;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.scijava.parsington.SyntaxTree;
+import org.unlaxer.Parsed;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ASTParserVisitor implements ParserVisitor{
+class ASTParserVisitor implements ParserVisitor{
 
     private List<SyntaxTree> allStatFormulae;
 
-    private LinkedList<Object> currentTokens;
+    private List<Token> currentTokens;
 
     @Override
     public void beginAssignment() {
@@ -74,6 +75,7 @@ public class ASTParserVisitor implements ParserVisitor{
     }
 
     public static ParserVisitor create(){
+        new Parsed()
         return new ASTParserVisitor(new ArrayList<>(),new LinkedList<>());
     }
 }
