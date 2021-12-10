@@ -65,7 +65,11 @@ configuration
     ;
 
 assignment
-    :   var ASSIGN expression SEMI
+    :   assignmentVar ASSIGN expression SEMI
+    ;
+
+assignmentVar
+    :   StringLiteral
     ;
 
 var
@@ -77,36 +81,41 @@ number
     ;
 
 expression
-    :   subtractiveExpression
+    :   additiveExpression
     |   ternExpression
     ;
 
 ternExpression
-    :   subtractiveExpression TERNTHEN expression TERNELSE expression
+    :   ternIf TERNTHEN ternThen TERNELSE ternElse
     ;
 
-subtractiveExpression
-	:	additiveExpression
-	|	subtractiveExpression '-' additiveExpression
-	;
+ternIf
+    : additiveExpression
+    ;
+
+ternThen
+    : additiveExpression
+    ;
+
+ternElse
+    : additiveExpression
+    ;
 
 additiveExpression
-	:	divisiveExpression
-	|	additiveExpression '+' divisiveExpression
-	;
-
-divisiveExpression
-	:	multiplicativeExpression
-	|	divisiveExpression '/' multiplicativeExpression
+    :   multiplicativeExpression
+	|	additiveExpression ADD multiplicativeExpression
+	|	additiveExpression SUB multiplicativeExpression
 	;
 
 multiplicativeExpression
-	:	value
-	|   multiplicativeExpression '*' expression
-	;
+	:   value
+    |	multiplicativeExpression MUL value
+    |	multiplicativeExpression DIV value
+    ;
 
 
 value
     : var
     | number
+    | LPAREN expression RPAREN
     ;

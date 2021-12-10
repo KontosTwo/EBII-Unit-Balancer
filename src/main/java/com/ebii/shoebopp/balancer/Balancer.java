@@ -1,4 +1,7 @@
 package com.ebii.shoebopp.balancer;
 
-public class Balancer {
+import com.ebii.shoebopp.configuration.parser.ParserVisitor;
+
+public class Balancer{
+
 }
