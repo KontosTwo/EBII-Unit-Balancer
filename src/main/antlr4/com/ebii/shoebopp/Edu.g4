@@ -8,7 +8,9 @@ literal
 	;
 
 DecimalLiteral
-    : DecimalDigits '.' DecimalDigits
+    : DecimalDigits
+    | '.' DecimalDigits
+    | DecimalDigits '.' DecimalDigits
     ;
 
 fragment
@@ -31,6 +33,9 @@ StringCharacter
 	|   '_'
 	|   [A-Z]
 	;
+
+// Skip whitespaces
+WS : [ \t\r\n]+ -> skip;
 
 // Keywords
 
@@ -113,9 +118,9 @@ multiplicativeExpression
     |	multiplicativeExpression DIV value
     ;
 
-
 value
-    : var
-    | number
+    :
     | LPAREN expression RPAREN
+    | var
+    | number
     ;

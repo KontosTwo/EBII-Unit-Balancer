@@ -1,1 +1,1 @@
-EBII EDU Rebalancer
+EBII EDU Standardizer

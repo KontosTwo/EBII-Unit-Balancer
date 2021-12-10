@@ -5,6 +5,9 @@ import com.ebii.shoebopp.EduParser;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.Stack;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Parser extends EduBaseListener {
 
@@ -12,17 +15,17 @@ public class Parser extends EduBaseListener {
     private final ParserContext context;
 
     private String currentAssignmentVar;
-    private float currentExpression;
-    private float currentMul;
-    private float currentAdd;
-    private float currentTern;
-    private float currentTernIf;
-    private float currentTernThen;
-    private float currentTernElse;
-    private float currentValue;
+    private final Stack<Float> currentExpression;
+    private final Stack<Float> currentMul;
+    private final Stack<Float> currentAdd;
+    private final Stack<Float> currentTern;
+    private final Stack<Float> currentTernIf;
+    private final Stack<Float> currentTernThen;
+    private final Stack<Float> currentTernElse;
+    private final Stack<Float> currentValue;
 
     public static Parser create(final ParserVisitor visitor, final ParserContext context){
-        return new Parser(visitor, context);
+        return  new Parser(visitor, context, new Stack<>(), new Stack<>(), new Stack<>(), new Stack<>(), new Stack<>(), new Stack<>(), new Stack<>(), new Stack<>());
     }
 
     @Override
@@ -32,74 +35,77 @@ public class Parser extends EduBaseListener {
 
     @Override
     public void exitAssignment(EduParser.AssignmentContext ctx) {
-        visitor.assign(currentAssignmentVar, currentExpression);
-        context.setContext(currentAssignmentVar, currentExpression);
+        final var expressionValue = currentExpression.pop();
+        visitor.assign(currentAssignmentVar, expressionValue);
+        context.setContext(currentAssignmentVar, expressionValue);
     }
 
     @Override
     public void exitTernExpression(EduParser.TernExpressionContext ctx){
-        if(currentTernIf != 0){
-            currentTern = currentTernThen;
+        if(currentTernIf.pop() != 0){
+            currentTern.push(currentTernThen.pop());
         }else{
-            currentTern = currentTernElse;
+            currentTern.push(currentTernElse.pop());
         }
     }
 
     @Override
     public void exitTernIf(EduParser.TernIfContext ctx){
-        currentTernIf = currentAdd;
+        currentTernIf.push(currentAdd.pop());
     }
 
     @Override
     public void exitTernThen(EduParser.TernThenContext ctx){
-        currentTernThen = currentAdd;
+        currentTernThen.push(currentAdd.pop());
     }
 
     @Override
     public void exitTernElse(EduParser.TernElseContext ctx){
-        currentTernElse = currentAdd;
+        currentTernElse.push(currentAdd.pop());
     }
 
 
     @Override
     public void exitMultiplicativeExpression(EduParser.MultiplicativeExpressionContext ctx){
         if(ctx.getChildCount() == 1){
-            currentMul = currentValue;
-        }else if(ctx.getChild(1).getText().equals("MUL")){
-            currentMul = currentMul * currentValue;
-        }else{
-            currentMul = currentMul / currentValue;
+            currentMul.push(currentValue.pop());
+        }else if(ctx.MUL() != null){
+            System.out.println("exit multiply with " + currentMul + " " + currentValue);
+            currentMul.push(currentMul.pop() * currentValue.pop());
+        }else if(ctx.DIV() != null){
+            System.out.println("exit divide with " + currentMul + " " + currentValue);
+            currentMul.push(currentMul.pop() / currentValue.pop());
         }
     }
 
     @Override
     public void exitAdditiveExpression(EduParser.AdditiveExpressionContext ctx){
         if(ctx.getChildCount() == 1){
-            currentAdd = currentMul;
-        }else if(ctx.getChild(1).getText().equals("ADD")){
-            currentAdd = currentAdd + currentMul;
-        }else{
-            currentAdd = currentAdd - currentMul;
+            currentAdd.push(currentMul.pop());
+        }else if(ctx.ADD() != null){
+            currentAdd.push( currentAdd.pop() + currentMul.pop());
+        }else if(ctx.SUB() != null){
+            currentAdd.push( currentAdd.pop() - currentMul.pop());
         }
     }
 
     @Override
     public void exitExpression(EduParser.ExpressionContext ctx) {
         if(ctx.additiveExpression() != null){
-            currentExpression = currentAdd;
+            currentExpression.push(currentAdd.pop());
         }else{
-            currentExpression = currentTern;
+            currentExpression.push(currentTern.pop());
         }
     }
 
     @Override
     public void exitValue(EduParser.ValueContext ctx) {
         if(ctx.var() != null){
-            currentValue = context.getContext(ctx.var().StringLiteral().getText());
+            currentValue.push(context.getContext(ctx.var().StringLiteral().getText()));
         }else if(ctx.number() != null){
-            currentValue = Float.parseFloat(ctx.number().DecimalLiteral().getText());
-        }else{
-            currentValue = currentExpression;
+            currentValue.push(Float.parseFloat(ctx.number().DecimalLiteral().getText()));
+        }else if(ctx.expression() != null){
+            currentValue.push(currentExpression.pop());
         }
     }
 }

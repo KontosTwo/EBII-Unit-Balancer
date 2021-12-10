@@ -39,8 +39,8 @@ public final class Standardizer {
     private static final String EDU_ENTRY_ATTRIBUTES_REGEX = "^attributes\\s*(\\w+)?(\\s*,\\s*(\\w+))*$";
     private static final Pattern EDU_ENTRY_ATTRIBUTES_PATTERN = Pattern.compile(EDU_ENTRY_ATTRIBUTES_REGEX);
 
-    public static Standardizer create(final  String eduPath, final String outputPath, final String balancerPath,final  String attributeDefinitionsPath){
-        return new Standardizer(balancerPath, attributeDefinitionsPath, eduPath, outputPath);
+    public static Standardizer create(final  String eduPath, final String outputPath, final String standardizerPath,final  String attributeDefinitionsPath){
+        return new Standardizer(standardizerPath, attributeDefinitionsPath, eduPath, outputPath);
     }
 
 
