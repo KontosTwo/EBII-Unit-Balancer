@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ebii.shoebopp</groupId>
-    <artifactId>edu-balancer</artifactId>
+    <artifactId>edu-standardizer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties><maven.compiler.source>12</maven.compiler.source><maven.compiler.target>12</maven.compiler.target></properties>

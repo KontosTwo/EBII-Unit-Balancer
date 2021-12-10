@@ -1,10 +1,11 @@
-package com.ebii.shoebopp.configuration.parser;
+package com.ebii.shoebopp.parser;
 
 import com.ebii.shoebopp.EduBaseListener;
 import com.ebii.shoebopp.EduParser;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Parser extends EduBaseListener {
 
     private final ParserVisitor visitor;
@@ -20,6 +21,10 @@ public class Parser extends EduBaseListener {
     private float currentTernElse;
     private float currentValue;
 
+    public static Parser create(final ParserVisitor visitor, final ParserContext context){
+        return new Parser(visitor, context);
+    }
+
     @Override
     public void exitAssignmentVar(EduParser.AssignmentVarContext ctx) {
         currentAssignmentVar = ctx.StringLiteral().getText();
@@ -28,7 +33,7 @@ public class Parser extends EduBaseListener {
     @Override
     public void exitAssignment(EduParser.AssignmentContext ctx) {
         visitor.assign(currentAssignmentVar, currentExpression);
-        context.set(currentAssignmentVar, currentExpression);
+        context.setContext(currentAssignmentVar, currentExpression);
     }
 
     @Override
@@ -90,7 +95,7 @@ public class Parser extends EduBaseListener {
     @Override
     public void exitValue(EduParser.ValueContext ctx) {
         if(ctx.var() != null){
-            currentValue = context.valueOf(ctx.var().StringLiteral().getText());
+            currentValue = context.getContext(ctx.var().StringLiteral().getText());
         }else if(ctx.number() != null){
             currentValue = Float.parseFloat(ctx.number().DecimalLiteral().getText());
         }else{
