@@ -37,11 +37,7 @@ public class Stats implements ParserVisitor, ParserContext {
 
     @Override
     public float getContext(String stat) {
-        if(values.get(stat) != null){
-            return values.get(stat);
-        }else{
-            throw new ParserException(String.format("'%s' has not been defined yet",stat));
-        }
+        return values.getOrDefault(stat,0f);
     }
 
     @Override

@@ -4,18 +4,12 @@ import com.ebii.shoebopp.parser.Parser;
 import com.ebii.shoebopp.parser.ParserContext;
 import com.ebii.shoebopp.parser.ParserVisitor;
 import com.ebii.shoebopp.standardizer.Stats;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import helpers.LexerBuilder;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.mockito.Mockito.*;
 
@@ -31,7 +25,7 @@ public final class ParserTest {
     @Test
     public void testIntegerAssign() throws Exception{
         final var lexerString =
-            LexerBuilder.create()
+            LexerBuilder.builder()
                 .assignment("test = 1;")
                 .build();
         setupParser(lexerString);
@@ -44,7 +38,7 @@ public final class ParserTest {
     @Test
     public void testDecimalAssign() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("test = 1.2;")
                         .build();
         setupParser(lexerString);
@@ -57,7 +51,7 @@ public final class ParserTest {
     @Test
     public void testDecimalAssignLeadingZero() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("test = 0.2;")
                         .build();
         setupParser(lexerString);
@@ -70,7 +64,7 @@ public final class ParserTest {
     @Test
     public void testDecimalAssignNoLeadingZero() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("test = .2;")
                         .build();
         setupParser(lexerString);
@@ -83,7 +77,7 @@ public final class ParserTest {
     @Test
     public void testMultipleAssign() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = 3;")
@@ -100,7 +94,7 @@ public final class ParserTest {
     @Test
     public void testReadVariable() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = testA;")
                         .build();
@@ -115,7 +109,7 @@ public final class ParserTest {
     @Test
     public void testReadAndOperateVariable() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = testA + 2;")
                         .build();
@@ -130,7 +124,7 @@ public final class ParserTest {
     @Test
     public void testReadAndOperateTwoVariable() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA + testB;")
@@ -147,7 +141,7 @@ public final class ParserTest {
     @Test
     public void testMultAddPemdas() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA + testB * 4;")
@@ -164,7 +158,7 @@ public final class ParserTest {
     @Test
     public void testDivSubPemdas() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA - testB / 4;")
@@ -181,7 +175,7 @@ public final class ParserTest {
     @Test
     public void testMultDivLeftRight() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA * testB / 4;")
@@ -198,7 +192,7 @@ public final class ParserTest {
     @Test
     public void testDivMultLeftRight() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA / testB * 4;")
@@ -215,7 +209,7 @@ public final class ParserTest {
     @Test
     public void testParen() throws Exception{
         final var lexerString =
-                LexerBuilder.create()
+                LexerBuilder.builder()
                         .assignment("testA = 1;")
                         .assignment("testB = 2;")
                         .assignment("testC = testA / (testB * 4);")
@@ -227,6 +221,76 @@ public final class ParserTest {
         assertAssigned("testA",1f);
         assertAssigned("testB",2f);
         assertAssigned("testC",.125f);
+    }
+
+    @Test
+    public void testTernThen() throws Exception{
+        final var lexerString =
+                LexerBuilder.builder()
+                        .assignment("testA = 1;")
+                        .assignment("testB = 2;")
+                        .assignment("testC = 0")
+                        .assignment("testD = testC ? testB : testA")
+                        .build();
+        setupParser(lexerString);
+
+        executeParser();
+
+        assertAssigned("testA",1f);
+        assertAssigned("testB",2f);
+        assertAssigned("testC",0);
+        assertAssigned("testD",1f);
+    }
+
+    @Test
+    public void testTernElse() throws Exception{
+        final var lexerString =
+                LexerBuilder.builder()
+                        .assignment("testA = 1;")
+                        .assignment("testB = 2;")
+                        .assignment("testC = 1")
+                        .assignment("testD = testC ? testB : testA")
+                        .build();
+        setupParser(lexerString);
+
+        executeParser();
+
+        assertAssigned("testA",1f);
+        assertAssigned("testB",2f);
+        assertAssigned("testC",1f);
+        assertAssigned("testD",2f);
+    }
+
+    @Test
+    public void testTernParen() throws Exception{
+        final var lexerString =
+                LexerBuilder.builder()
+                        .assignment("testA = 1;")
+                        .assignment("testB = 2;")
+                        .assignment("testC = 1")
+                        .assignment("testD = (testC * 0) ? testB : testA")
+                        .build();
+        setupParser(lexerString);
+
+        executeParser();
+
+        assertAssigned("testA",1f);
+        assertAssigned("testB",2f);
+        assertAssigned("testC",1f);
+        assertAssigned("testD",1f);
+    }
+
+    @Test
+    public void testUndefinedVariable() throws Exception{
+        final var lexerString =
+                LexerBuilder.builder()
+                        .assignment("testA = undefinedVariable;")
+                        .build();
+        setupParser(lexerString);
+
+        executeParser();
+
+        assertAssigned("testA",0f);
     }
 
     private void setupParser(String lexerString) throws Exception{
@@ -249,21 +313,5 @@ public final class ParserTest {
         verify(visitor,times(1)).assign(variable, value);
     }
 
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private final static class LexerBuilder{
-        private final StringBuilder builder;
 
-        public static LexerBuilder create(){
-            return new LexerBuilder(new StringBuilder());
-        }
-
-        public LexerBuilder assignment(final String assignment){
-            builder.append(assignment);
-            return this;
-        }
-
-        public String build(){
-            return builder.toString();
-        }
-    }
 }

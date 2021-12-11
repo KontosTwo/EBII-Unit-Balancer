@@ -70,10 +70,8 @@ public class Parser extends EduBaseListener {
         if(ctx.getChildCount() == 1){
             currentMul.push(currentValue.pop());
         }else if(ctx.MUL() != null){
-            System.out.println("exit multiply with " + currentMul + " " + currentValue);
             currentMul.push(currentMul.pop() * currentValue.pop());
         }else if(ctx.DIV() != null){
-            System.out.println("exit divide with " + currentMul + " " + currentValue);
             currentMul.push(currentMul.pop() / currentValue.pop());
         }
     }
