@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.ebii.shoebopp.standardizer.Regex.DECIMAL_REGEX;
@@ -24,13 +23,14 @@ public enum Entry {
 
   @Getter(AccessLevel.PRIVATE)
   private final String statName;
-  @Getter
-  private final String replacementPattern;
 
+  @Getter private final String replacementPattern;
 
   public static final Map<String, Entry> ENTRIES;
 
-  static{
-      ENTRIES = Arrays.stream(Entry.values()).collect(Collectors.toMap(Entry::getStatName, Function.identity()));
+  static {
+    ENTRIES =
+        Arrays.stream(Entry.values())
+            .collect(Collectors.toMap(Entry::getStatName, Function.identity()));
   }
 }
