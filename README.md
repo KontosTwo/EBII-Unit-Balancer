@@ -18,6 +18,12 @@ until they are satisfied.
 
 ### How to use
 
+##### Command line
+
+```$xslt
+java -jar Standardizer.jar <EDU absolute path> <Output absolute path> <Standardizer absolute path> <Attribute Definitions absolute path>
+```
+
 ##### Attributes
 
 The M2TW engine defines in EDU an entry called "attributes". This is simply a list
